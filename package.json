@@ -15,14 +15,16 @@
     "LICENSE"
   ],
   "scripts": {
-    "_prepare": "npm run build",
+    "prepare": "npm run build",
     "clean": "[ ! -d ./dist ] || rm -rf dist/*",
     "clean:all": "npm run clean && rm -rf node_modules",
     "build": "tsc",
     "build:all": "npm run clean:all && npm i && npm run build",
-    "test": "find ./test/ts -type f -name '*.js' -delete && npm run build:tests && mocha --exit --no-timeouts --recursive --reporter mochawesome --reporter-options reportDir=test-results test/**/*.test.js",
+    "_test": "find ./test/ts -type f -name '*.js' -delete && npm run build:tests && mocha --exit --no-timeouts --recursive --reporter mochawesome --reporter-options reportDir=test-results test/**/*.test.js",
     "test:debug": "npm run build && tsc -p test && mocha --inspect-brk --recursive test/**/*.test.js",
-    "cover": "./node_modules/.bin/nyc --reporter=lcov --reporter=text npm t"
+    "cover": "./node_modules/.bin/nyc --reporter=lcov --reporter=text npm t",
+    "commit": "./node_modules/.bin/git-cz",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "@vivocha/public-entities": "iengine",
@@ -70,7 +72,7 @@
     }
   },
   "husky": {
-    "hooks": {
+    "_hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "npm run build && npm run cover && npm run check-coverage"
     }
