@@ -83,9 +83,9 @@ Basically, an Extension receives API calls from Vivocha, it communicates with th
 
 The next picture shows where an Extension collocates in the Vivocha flow, and the main exposed API endpoints.
 
-| ![Extension API](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension.svg) |
-| :-----------------------------------------------------------------------------------------------------: |
-|                        **FIGURE 1 - Extension and Extension API main endpoints**                        |
+| ![Extension API](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension.svg?sanitize=true) |
+| :-------------------------------------------------------------------------------------------------------------------: |
+|                               **FIGURE 1 - Extension and Extension API main endpoints**                               |
 
 ### [Persistence](#persistence)
 
@@ -222,9 +222,9 @@ For an higher-level overview about Channels in the Vivocha Platform, please read
 
 The following sequence diagram shows a typical Channel lifecycle in Vivocha, from adding it as an Extension, to the end, when the channel is deleted.
 
-| ![Channel Lifecycle](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/channel-flow.svg) |
-| :------------------------------------------------------------------------------------------------------------: |
-|                                   **FIGURE 2 - A typical Channel lifecycle**                                   |
+| ![Channel Lifecycle](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/channel-flow.svg?sanitize=true) |
+| :--------------------------------------------------------------------------------------------------------------------------: |
+|                                          **FIGURE 2 - A typical Channel lifecycle**                                          |
 
 After you developed and run a new Channel extending the right classes of this Extension SDK (remember: a Channel is a particular type of Extension, thus **a Channel IS an Extension**), as result the running Channel is available at a given URL and it automatically self-describes its API using the OpenAPI JSON format.
 
@@ -251,9 +251,9 @@ As reported in the previous figure, the flow for a typical Vivocha Channel lifec
 A Channel is an Extension subclass that inherits all its methods (and API endpoints), adding also other functionalities, like a `message` operation, used to send message to the External communication Service.
 The following figure shows how a Channel positions in the Vivocha flow and which are the main exposed API endpoints.
 
-| ![Channel API](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/channel.svg) |
-| :-------------------------------------------------------------------------------------------------: |
-|                        **FIGURE 3 - Channel and Channel API main endpoints**                        |
+| ![Channel API](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/channel.svg?sanitize=true) |
+| :---------------------------------------------------------------------------------------------------------------: |
+|                               **FIGURE 3 - Channel and Channel API main endpoints**                               |
 
 Next table lists the main Channel instance methods, and the API endpoints corresponding to each method.
 
