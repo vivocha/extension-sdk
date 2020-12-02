@@ -1,0 +1,176 @@
+[
+  {
+    "id": "DESCRIPTION",
+    "values": {
+      "de": {
+        "value": "Dummy Channel-Kanal",
+        "state": "final"
+      },
+      "en": {
+        "value": "Dummy Channel channel",
+        "state": "final"
+      },
+      "es": {
+        "value": "Canal de Dummy Channel",
+        "state": "final"
+      },
+      "fr": {
+        "value": "Par Dummy Channel",
+        "state": "final"
+      },
+      "it": {
+        "value": "Canale Dummy Channel",
+        "state": "final"
+      },
+      "ja": {
+        "value": "Dummy Channelチャネル",
+        "state": "final"
+      }
+    }
+  },
+  {
+    "id": "ENGINE",
+    "values": {
+      "de": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "en": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "es": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "fr": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "it": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "ja": {
+        "value": "Dummy Channel",
+        "state": "final"
+      }
+    }
+  },
+  {
+    "id": "NAME",
+    "values": {
+      "de": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "en": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "es": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "fr": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "it": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "ja": {
+        "value": "Dummy Channel",
+        "state": "final"
+      }
+    }
+  },
+  {
+    "id": "serviceId.LABEL",
+    "values": {
+      "de": {
+        "value": "ID der Dummy Channel-Seite",
+        "state": "final"
+      },
+      "en": {
+        "value": "Dummy Channel Service Id",
+        "state": "final"
+      },
+      "es": {
+        "value": "ID página Dummy Channel",
+        "state": "final"
+      },
+      "fr": {
+        "value": "Page d'identification Dummy Channel",
+        "state": "final"
+      },
+      "it": {
+        "value": "Id pagina Dummy Channel",
+        "state": "final"
+      },
+      "ja": {
+        "value": "Dummy ChannelページID",
+        "state": "final"
+      }
+    }
+  },
+  {
+    "id": "serviceToken.LABEL",
+    "values": {
+      "de": {
+        "value": "Token der Dummy Channel-Seite",
+        "state": "final"
+      },
+      "en": {
+        "value": "Dummy Channel Service Token",
+        "state": "final"
+      },
+      "es": {
+        "value": "Token página Dummy Channel",
+        "state": "final"
+      },
+      "fr": {
+        "value": "Jeton de page Dummy Channel",
+        "state": "final"
+      },
+      "it": {
+        "value": "Token pagina Dummy Channel",
+        "state": "final"
+      },
+      "ja": {
+        "value": "Dummy Channelページトークン",
+        "state": "final"
+      }
+    }
+  },
+  {
+    "id": "webhook.LABEL",
+    "values": {
+      "de": {
+        "value": "Webhook",
+        "state": "final"
+      },
+      "en": {
+        "value": "Webhook",
+        "state": "final"
+      },
+      "es": {
+        "value": "Webhook",
+        "state": "final"
+      },
+      "fr": {
+        "value": "Webhook",
+        "state": "final"
+      },
+      "it": {
+        "value": "Webhook",
+        "state": "final"
+      },
+      "ja": {
+        "value": "ウェブフック",
+        "state": "final"
+      }
+    }
+  }
+]

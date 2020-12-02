@@ -1,0 +1,545 @@
+# Vivocha Extension SDK
+
+_JavaScript / TypeScript SDK to create **Extensions** and **Channels** for the [Vivocha](https://www.Vivocha.com) platform_.
+
+|                                                                                                                                                               ![Logo](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/extension-sdk.svg?sanitize=true)                                                                                                                                                               |
+| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [![NPM version](https://img.shields.io/npm/v/@Vivocha/bot-sdk.svg?style=flat)](https://www.npmjs.com/package/@vivocha/extension-sdk) [![Build Status](https://travis-ci.org/vivocha/extension-sdk.svg?branch=master)](https://travis-ci.org/vivocha/extension-sdk) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) |
+
+---
+
+> **IMPORTANT**: The Extension SDK is intended to be used to develop Extensions and Channels for the Vivocha Platform **version > 7.x**
+
+## Node Version
+
+> **Tested with Node.js version 12.x**.
+
+To start with the Extension SDK, it is recommended to install it from NPM:
+
+```sh
+npm i @vivocha/extension-sdk
+```
+
+---
+
+The Vivocha Extension SDK allows to write Extensions and new communication Channels to be integrated in the Vivocha Platform.
+
+Examples of extensions include Asset Managers, external services; channels are special extensions targeted to act as a "proxy" to a communication channel to exchange messages using an external service. Examples of channels can be those which communicates with Twitter, Facebook Messenger, Slack and so on...
+Extensions and Channels developed using this SDK automatically expose a well-defined REST API called by Vivocha for the whole life-cycle of the extension (subscribing, deleting, etc...); and, to send/receive messages to/from external platforms.
+
+---
+
+## Table of Contents
+
+- [Vivocha Extension SDK](#vivocha-extension-sdk)
+  - [Node Version](#node-version)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [What is an Extension](#what-is-an-extension)
+    - [Persistence](#persistence)
+      - [Configuring Persistence](#configuring-persistence)
+      - [Using Persistence](#using-persistence)
+    - [Extension API](#extension-api)
+    - [Sending Messages to Vivocha](#sending-messages-to-vivocha)
+    - [Sending Media Attachments to Vivocha](#sending-media-attachments-to-vivocha)
+    - [Running an Extension or a Channel](#running-an-extension-or-a-channel)
+  - [What is a Channel](#what-is-a-channel)
+    - [Channel Lifecycle](#channel-lifecycle)
+    - [Channel API](#channel-api)
+      - [Capabilities](#capabilities)
+      - [Multilanguage Strings](#multilanguage-strings)
+      - [Assets](#assets)
+      - [Settings](#settings)
+      - [Settings Client](#settings-client)
+      - [Subscribe Method](#subscribe-method)
+      - [Unsubscribe Method](#unsubscribe-method)
+      - [Message Method](#message-method)
+      - [Webhook](#webhook)
+    - [How to Write a Channel: Quick Start](#how-to-write-a-channel-quick-start)
+
+---
+
+## [Overview](#overview)
+
+The Vivocha Extension SDK allows to write custom **Extensions** and communication **Channels** to integrate with the Vivocha Platform. Extensions are external services integrations to be added to a particular Vivocha account, and Channels are communication channels by which end-users can chat with agents through Vivocha.
+
+An Extension, and a Channel, developed using the SDK "automagically" exposes a well-defined REST API completely described by the [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md).
+
+When the developed Extension or Channel is deployed and available at a specific URL, the OpenAPI description is always available at `http(s)://<URL>/openapi.json`.
+
+It is important to know that a communication Channel is an Extension subclass, therefore it inherits all its basic functionalities.
+
+## [What is an Extension](#what-is-an-extension)
+
+An Extension can be seen as a standalone external service proxy which adds and manage a set of functionalities to be added to the Vivocha Platform.
+
+The developed Extension is responsable to communicate with the External Service Platform which represents. Examples of particular extensions can be: an asset manager to upload and retrieve media assets to/from a cloud-based storage service, or a chat channel, like WhatsApp, or FB Messenger.
+
+This Extension SDK provides a base class named `ExtensionAPI`, which defines the interface and basic functions common to all the extensions (and consequently, all the channels) that subclasses must implement and expose to become a compliant Vivocha Extension.
+
+Basically, an Extension receives API calls from Vivocha, it communicates with the External Service Platform it proxies, and calls Vivocha API endpoints to forward events coming from that External Service.
+
+The next picture shows where an Extension collocates in the Vivocha flow, and the main exposed API endpoints.
+
+| ![Extension API](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/extension.svg) |
+| :-------------------------------------------------------------------------------------------------: |
+|                      **FIGURE 1 - Extension and Extension API main endpoints**                      |
+
+### [Persistence](#persistence)
+
+Extensions need to persist data, at least the settings to configure a particular extension instance (or channel instance), when it is configured and saved using the Vivocha Campaign Builder.
+
+For example, it is necessary to store information like an appId, or an API token, or other credentials used to call the External Service Platform.
+
+Moreover, it may be necessary to persist also temporary, volatile, data; for example, message ids to correlate "delivered" or "read" messages coming from extensions or channels in a second time.
+
+The `ExtensionAPI` class provides all the needed methods to persist data to a database: by default the Extension SDK will try to persist data to specified collections in a **AWS DynamoDB** reachable instance; but, if the `MONGO_URL` environment variable is set to a runnning MongoDB instance URL, then **MongoDB** engine is used, instead.
+
+#### [Configuring Persistence](#configuring-persistence)
+
+Collections can be passed to the `ExtensionAPI` class constructor.
+Collections can be created using the following class methods:
+
+```typescript
+static createCollection<T extends object>(defaultName: string, key: string, ttlKey?: string, ttl?: number): PersistentCollection<T>;
+```
+
+where:
+
+`T` is the type of the record to persist. Usually contains the extension/channel required settings (entered in Vivocha Campaign Builder at configuration-time) and the `environment` object, sent by Vivocha in each request to Extension/Channel API;
+
+`defaultName` is the collection name;
+
+`key` is the object property name to use as DB index;
+
+`ttlKey` (optional, usually used for temporary persistence) is the record Time-To-Live index (set to `null` if not needed);
+
+`ttl` (optional, usually used for temporary persistence) is the record Time-To-Live millis after that the temp record is automatically deleted;
+
+**Example**: setting persistence and temporary persistence for an hypothetic Twitter channel:
+
+```typescript
+ExtensionAPI.createCollection<TwitterRecord>('twitter', 'appId');
+
+ExtensionAPI.createCollection<TwitterTempRecord>('twitter_temp', 'screenName', null, 12 * 60 * 60 * 1000);
+```
+
+#### [Using Persistence](#using-persistence)
+
+The `ExtensionAPI` class provides the following methods to manage persistence:
+
+```typescript
+getRecord(key: string): Promise<Record>
+
+deleteRecord(key: string): Promise<any>
+
+replaceRecord(record: Record): Promise<Record>
+```
+
+where `record` is the persisted data object and `key` is the record property name chosen as index;
+
+And, to manage temporary data persistence it provides the following methods:
+
+```typescript
+getTempRecord(key: string): Promise<Record>
+
+deleteTempRecord(key: string): Promise<any>
+
+replaceTempRecord(record: Record): Promise<Record>
+```
+
+where `record` is the persisted temp data object and `key` is the record property name chosen as index.
+
+---
+
+### [Extension API](#extension-api)
+
+The `ExtensionAPI` class defines the interface and the core methods common to all the Extensions and Channels, API endpoints included.
+
+Some methods of this class are optional. Therefore, only the implemented methods (in subclasses) are also exposed as API endpoints.
+
+Along with the methods related to [Persistence (see above)](#persistence), the `ExtensionAPI` class also provides facility methods to send messages and media attachments to Vivocha.
+
+As written above, the `ExtensionAPI` class defines the interface and basic functions common to all the Extensions, Channels included.
+Thus, please refer to [Channel API](#channel-api) section to discover the details about each method and the related API endpoints.
+
+### [Sending Messages to Vivocha](#sending-messages-to-vivocha)
+
+When an Extension/Channel receives a message from the connected External Service Platform (supposedly through the exposed Webhook endpoint), the Extension/Channel should perform two tasks:
+
+1. **convert** the received, platform-specific message content to the corresponding Vivocha Message format;
+2. **send** the converted message to Vivocha.
+
+Step 2 can be fulfilled calling the `ExtensionAPI` `postToWebHook()` method. See `/src/extension.ts` code for details and signature.
+
+### [Sending Media Attachments to Vivocha](#sending-media-attachments-to-vivocha)
+
+When an Extension/Channel receives a message/event containing a media attachment (images, videos, documents, ...) from the connected External Service Platform (supposedly through the Extension/Channel exposed Webhook endpoint), the Extension/Channel must perform two tasks:
+
+1. **convert** the received, platform-specific attachment content to the corresponding Vivocha Message format;
+2. **send** the converted media attachment message to Vivocha.
+
+Step 2 can be fulfilled calling the `ExtensionAPI` `postMediaToWebHook()` method. See `/src/extension.ts` code for details and signature.
+
+### [Running an Extension or a Channel](#running-extension-or-a-channel)
+
+To run an Extension or a Channel you need to specify which database engine to use.
+
+By default the running code will try to connect to a AWS DynamoDB instance, unless MongoDB is specified.
+To use MongoDB just use the `MONGO_URL` environment property.
+
+For example:
+
+```sh
+MONGO_URL=mongodb://<server>:37017 node dist/index
+```
+
+Sometimes, for example at development time, you run your Extension or Channel locally, under an NGROK tunnel. Then, you need to run it specifying the base URL from which your channel is available (it will be used also to generate the public webhook URL to set in the External Service Platform).
+
+To set the base URL, just use the corresponding environment variable, like in:
+
+```sh
+BASE_URL=https://<public-url> MONGO_URL=mongodb://<server>:37017 node dist/index
+```
+
+For example:
+
+```sh
+BASE_URL=https://abcd123.ngrok.io MONGO_URL=mongodb://<server>:37017 node dist/index
+```
+
+## [What is a Channel](#what-is-channel)
+
+Channels are a particular type of Extension created subclassing the `ChannelAPI` class. 
+
+A Channel acts like a proxy between Vivocha and an External messaging (chat) Service, e.g., Twitter or Facebook Messenger, and so on... . A Channel has the responsibility to receive and adapt messages and events coming from the External Service and to send them to Vivocha; and, to receive and adapt messages coming from Vivocha and to forward them to the External messaging Service using the right format. A Channel instance automatically exposes an API, fully described by the OpenAPI specification, as already written, which provides endpoints to fully manage the Channel entire lifecycle.
+
+For an higher-level overview about Channels in the Vivocha Platform, please read the [Channel documentation](https://docs.Vivocha.com/vcb-channels).
+
+### [Channel Lifecycle](#channel-lifecycle)
+
+The following sequence diagram shows a typical Channel lifecycle in Vivocha, from adding it as an Extension, to the end, when the channel is deleted.
+
+| ![Channel Lifecycle](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/channel-flow.svg) |
+| :--------------------------------------------------------------------------------------------------------: |
+|                                 **FIGURE 2 - A typical Channel lifecycle**                                 |
+
+After you developed and run a new Channel extending the right classes of this Extension SDK (remember: a Channel is a particular type of Extension, thus **a Channel IS an Extension**), as result the running Channel is available at a given URL and it automatically self-describes its API using the OpenAPI JSON format.
+
+As reported in the previous figure, the flow for a typical Vivocha Channel lifecycle has the following steps:
+
+1. through the Vivocha Campaign Builder, it is possible to add the Channel entering its URL + `/openapi.json` path;
+2. Vivocha automatically calls the `/openapi.json` endpoint, parses the OpenAPI description and it downloads the required assets (e.g. icons);
+3. through the Vivocha Campaign Builder, a new Channel entrypoint instance is created for the Channel;
+4. Vivocha calls the Channel `/extension/settings` endpoint (or, optionally the `/extension/settings-client`, in case of a custom settings client, read more in the sections below in this document) to on-the-fly build and show a configuration UI in teh Campaign Builder to add the Channel entrypoint instance;
+5. on entrypoint save, Vivocha calls the `/extension/subscribe` endpoint with entered settings and all the required properties to make the subscription and save the Channel instance;
+6. the Channel code saves the configured instance settings to the database (AWS DynamoDb or MongoDB);
+7. (optionally) the Channel eventually calls the specific External Service APIs to register the channel instance in that platform, like registering the Channel webhook that will be called as end-users send messages using the External Service;
+8. steps from 8 to 11 are asynchronous and repeated as messages flow between the Vivocha Platform and the External Service Platform that the Channel represents. In other words, sequential steps 10 and 11 can happen before sequential steps 8 and 9, and viceversa. Step 8: Vivocha calls the `/channel/message` endpoint to send a message to the Channel;
+9. the Channel calls a specific External Service API endpoint to send the Vivocha message to the end-user; the Channel code has the responsibility to convert the received Vivocha message to the required message format, which is platform-specific for the referenced External Service;
+10. at any time, when the end-user sends a message, the External Platform calls the Channel Webhook to forward the message to it;
+11. the Channel converts the specific message body to the Vivocha Message format and sends it to the Vivocha platform, calling the methods provided by this Extension SDK (`postToWebHook()` or `postMediaToWebhook()`);
+12. using the Vivocha Campaign Builder, it is possible to delete the Channel entrypoint instance;
+13. then, Vivocha calls the Channel `/extension/unsubscribe` endpoint;
+14. the Channel deletes the corresponding record from the database;
+15. (optionally) the Channel eventually calls a specific External Platform API endpoint to unsubscribe and clean that channel configuration from that Service;
+
+### [Channel API](#channel-api)
+
+A Channel is an Extension subclass that inherits all its methods (and API endpoints), adding also other functionalities, like a `message` operation, used to send message to the External communication Service.
+The following figure shows how a Channel positions in the Vivocha flow and which are the main exposed API endpoints.
+
+| ![Channel API](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/channel.svg) |
+| :---------------------------------------------------------------------------------------------: |
+|                      **FIGURE 3 - Channel and Channel API main endpoints**                      |
+
+Next table lists the main Channel instance methods, and the API endpoints corresponding to each method.
+
+| Class Methods                  | API Endpoints            | DESCRIPTION                                                                                                                                                                 |
+| ------------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `capabilities()`               | `/channel/capabilities`  | Returns Channel capabilities that represent the description of what the channel can do in terms communication type, in term of messages and messages flow direction         |
+| `settings()`                   | `/extension/settings`    | Returns the configuration settings description (JSON Schema) about the Channel; Vivocha uses that JSON Schema to build a Channel Configuration UI  in the Campaign Builder. |
+| `message()`                    | `/channel/message`       | Send a message from Vivocha to External Service                                                                                                                             |
+| `subscribe()`                  | `/extension/subscribe`   | Called by Vivocha to subscribe to the External Service                                                                                                                      |
+| `unsubscribe()`                | `/extension/unsubscribe` | Called by Vivocha to unsubscribe from the External Service                                                                                                                  |
+| configurable Webhook operation | `/webhook/<Custom_PATH>` | Called by External Service to send messages and events to Vivocha, the Channel imple entation defines how the Webhook URL is composed                                       |
+
+#### [Capabilities](#capabilities)
+
+Capabilities describe what a Channel is capable to do in terms of messages and message flow "directions".
+
+For example, capabilities can describe whether a Channel supports textual chat messaging or voice communication. Inbound or outbound communication type, etc... Capabilities are represented by a JSON object and can be obtained (anche called by Vivocha) by the exposed `/channel/capabilities` API endpoint.
+
+For a Channel it is important to describe which capabilities it is able to provide.
+
+For a complete specification about capabilities, please see this [Channel Capabilities documentation](https://github.com/vivocha/bot-sdk/tree/develop#channel-capabilities).
+
+#### [Multilanguage Strings](#multilanguage-strings)
+
+In order to provide translations and multilanguage configuration User Interface in Vivocha, a Channel should provide the translations for every used UI label, for example, for every settings property/field. Multilanguage strings are specified through a JSON object which contains the labels used in Vivocha to configure the Channel. The JSON object has a set of properties representing the strings and related translation for supported languages. Strings properties are identified by an id that represents the label used in the Vivocha Campaign Builder, Channel configuration UI, to help the administrator user to configure the channel settings using her/his language.
+
+Strings must be saved to `/data/strings.json` file.
+
+An example of a multilanguage strings JSON content is like:
+
+```json
+[
+  {
+    "id": "NAME",
+    "values": {
+      "it": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "en": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "es": {
+        "value": "Dummy Channel",
+        "state": "final"
+      }
+    }
+  },
+  {
+    "id": "DESCRIPTION",
+    "values": {
+      "it": {
+        "value": "Canale Dummy",
+        "state": "final"
+      },
+      "en": {
+        "value": "Dummy Channel",
+        "state": "final"
+      },
+      "es": {
+        "value": "Canal de Dummy",
+        "state": "final"
+      }
+    }
+  },  
+  {
+    "id": "apiToken.LABEL",
+    "values": {
+      "it": {
+        "value": "API Token per il Dummy Channel",
+        "state": "final"
+      },
+      "en": {
+        "value": "Dummy Channel API Token",
+        "state": "final"
+      },
+      "es": {
+        "value": "Token API Dummy Channel",
+        "state": "final"
+      }
+    }
+  }
+]
+```
+
+#### [Assets](#assets)
+
+Assets are a set of media files used by the Channel configuration UI. Basically, is the set of the icons used in the Campaign Builder Channel UI to be shown to the administrator user configuring che channel. Icons are asset files located in the `/assets` folder and they are automatically served by the `ExtensionAPI` class at `/extension/assets/{asset_name}` endpoint.
+
+Used assets are specified in the `ChannelAPI` subclass constructor, passing the Extension Info `x-vivocha` property, for example like in:
+
+```json
+'x-vivocha': {
+          type: 'channel',
+          subType: 'twitter',
+          icons: {
+            extension: 'twitter.svg',
+            instance: {
+              dark: 'channel_dark.svg',
+              light: 'channel_light.svg',
+              color: 'channel_color.svg'
+            }
+          }
+        }
+```
+
+As written before, referenced icons files must be saved in the Channel `/assets` folder.
+
+#### [Settings](#settings)
+
+To create the Channel within the Campaign Builder configuration UI, it is necessary to specify its settings using the JSON Schema object format. Properties of this JSON Schema match the settings defined andreequired to configure teh Channel instance and they will be obtained by Vivocha calling the exposed `/extension/settings` endpoint.
+
+In the JSON Schema it is possible to set mandatory properties as entries in the array under the `required` property.
+
+Each property in the JSON Schema can have a `visibility` property, used to specify if the field may contain sensitive data to not show to users, such as tokens or passwords that should be protected in the UI form. The `visibility` property can take the following values: `hidden` or `toggleable` or `masked`. If visibility is not set for a particular field it will be always visible by default.
+
+Possible values are:
+
+- `hidden`: this field will not be shown in the UI
+
+- `toggleable`: the field can be shown clicking the "toggle button"
+
+- `masked`: masked by *, like for "password type fields"
+
+An example of a `settings()` method implementation returning a JSON Schema is the following:
+
+```typescript
+  settings(): OpenAPIV3.SchemaObject {
+    return {
+      type: 'object',
+      required: ['pageId', 'pageToken'],
+      properties: {
+        pageId: {
+          type: 'string',
+          minLength: 1
+        },
+        pageToken: {
+          type: 'string',
+          minLength: 1,
+          visibility: 'toggleable'
+        }
+      }
+    }
+  }
+```
+
+#### [Settings Client](#settings-client)
+
+Some External Services require additional configuration for a Channel. This configuration can therefore be more complex to be described using a JSON Schema as the default settings procedure described above.
+
+To fulfill the need to have a more complex or complete configuration UI in the Vivocha Campaign Builder it can be developed and set a **Settings Client**, which is a complete web client application, then served by the Channel itself, and must be contained in the `/settings/index.html` file.
+
+As already said, the Settings Client is a web application client written in HTML, JavaScript and CSS. This application will be presented to the cnfiguring administrator user in the Configuration Builder through an iFrame letting to complete the settings configuration of the particular Channel.
+
+The Settings Client can also insert some additional settings, it could generate Webhook URLs, unique ids, etc...
+It is also possible to use a Mustache-based template engine, that can be used to resolve references to Channel served values like base URL or specific Channel environment properties.
+
+In other words, if the Channel Settings Client needs to obtain the Channel base URL it can declare something like:
+
+```javascript
+const baseURL = '{{BASE_URL}}';
+```
+
+Every environment variable set at Channel launch-time will be available in the template system.
+
+For example, if a Channel has been run with the command:
+
+```sh
+APP_ID=123 APP_TOKEN=456-abc-890 NAME=DummyChannel node /dist/index
+```
+
+Then, the Settings Client can resolve also those variables using templates, like in:
+
+```javascript
+const appId = '{{APP_ID}}';
+const appToken = '{{APP_TOKEN}}';
+const name = '{{NAME}}';
+```
+
+and it can use that resolved values as required by its own business logic.
+
+#### [Subscribe Method](#subscribe-method)
+
+Called by Vivocha through the endpoint `/extension/subscribe` to add a channel, save the record with the channel settings in the database and to eventually call the external service API to "register" the channel webhook or to activate a subscription in order to receive messages from the external communication service.
+Requests are sent by Vivocha. A subscribe request contains a JSON with the following properties (in bold the required ones):
+
+| PROPERTY          | VALUE                               | DESCRIPTION |
+| ----------------- | ----------------------------------- | ----------- |
+| **`environment`** | object, see Environment table below | TODO        |
+| `settings`        | (optional) any                      | TODO        |
+| `context`         | (optional) any                      | TODO        |
+| `token`           | (optional) any                      | TODO        |
+
+**Environment**:
+
+| PROPERTY          | VALUE             | DESCRIPTION                                                 |
+| ----------------- | ----------------- | ----------------------------------------------------------- |
+| **`apiUrl`**      | string            | Vivocha complete url api e.g. TODO                          |
+| **`acct_id`**     | string            | Vivocha account                                             |
+| **`extensionId`** | string            | Vivocha extension id after the registration in the platform |
+| **`instanceId`**  | string            | Id of the configured channel instance                       |
+| `token`           | (optional) string | An API token used to call Vivocha API                       |
+
+#### [Unsubscribe Method](#unsubscribe-method)
+
+Called by Vivocha through the `/extension/unsubscribe` API endpoint to remove the channel.
+An unsubscribe request is called to delete the channel from Vivocha and to eventually do cleaning operations on the external communication service.
+
+#### [Message Method](#message-method)
+
+Called by Vivocha to send a message from Vivocha to the external third party service (therefore, to the end-user). Messages should be converted in the required channel message format.
+Supported Vivocha Messages are: **Text Message**, **IsWriting Message**, **Ack Message**, **Action Message**, **Attachment Message**, **Postback Message** and **Location Message**. More details about Vivocha Messages can be found in the [Vivocha Bot SDK documentation, starting from here](https://github.com/vivocha/bot-sdk/tree/develop#text-message).
+
+**`[----> TODO: spiegare meglio in maniera più schematica]`**
+
+`APIContext` contains the HTTP request (`APIRequest`) and the HTTP response (`APIResponse`).
+
+Message requests are JSON objects with following properties:
+
+| PROPERTY          | VALUE                         | DESCRIPTION                                                                        |
+| ----------------- | ----------------------------- | ---------------------------------------------------------------------------------- |
+| **`environment`** | object, see Environment below | TODO:                                                                              |
+| `message`         | Vivocha standard message      | See [Vivocha Messages](https://github.com/vivocha/bot-sdk/tree/develop#botmessage) |
+| `settings`        | any                           | TODO:                                                                              |
+| `context`         | (optional) any                | TODO:                                                                              |
+
+#### [Webhook](#webhook)
+
+In order to receive events and messages from the related External Service Platform, the Channel must expose a Webhook endpoint, which URL must be configured in the External Service.
+
+### [How to Write a Channel: Quick Start](#how-to-write-channel-quick-start)
+
+The examples folder contains a basic Channel implementation (see `[/examples/channel-boilerplate](PATH)`) to start developing a new Channel and to better understand the exposed methods and functionalities.
+
+The `channel-boilerplate` (see its `src/index.ts` file) extends the `ChannelAPI` and defines capabilities and settings, and it implements the `subscribe`, `unsubscribe`, `message` and basic webhook operations.
+
+IMPORTANT: To learn how to create and connect a channel to the Vivocha Platform, please start from the related [Vivocha Documentation](https://docs.Vivocha.com/vcb-channels).
+
+First of all, it is necessary to understand and define which configuration a channel needs to have by following the indications that the External Service platform requires to configure the integration, following its documentation.
+
+A Channel is a standalone web application that exposes a well-defined API. The resource is a webhook and contains the operations to receive data from the third party service which the Channel represents. If third party service needs to validate the webhook, a validation operations should be added to the resource.
+
+A description of what a channel can do and the type of messages should be configured in the capabilities method.
+
+A subscribe called by Vivocha using `/extension/subscribe` endpoint to subscribe to the third party service. If it is necessary to call API to register/add this channel webhook on the third party service this is the place to do that
+
+An unsubscribe service called by Vivocha using `/extension/unsubscribe` endpoint to unsubscribe to the third party service. If it is necessary to call API to remove this channel webhook on the third party service this is the place to do that
+
+The message method called by Vivocha to send a message from Vivocha to third party service (to the final user).
+
+Webhook class that extends Operation to receive messages from Third Party service. This webhook should be set in the third party service configuration.
+
+---
+
+An example of a Channel can be build starting from the boilerplate [TODO]
+
+The following steps sum up what you need to do to write a Channel:
+
+1. Import the required libraries, at least `@vivocha/extension-sdk`, and eventually the external service SDK libraries (if provided).
+
+2. Write the **Channel Class** extending the `ChannelAPI` class, specifiyin the record type which represents the channel settings document to be saved in the database.
+
+For example:
+
+```typescript
+class DummyChannel extends ChannelAPI<DummyChannelRecord> {...}
+```
+
+3. At least the following methods should be implemented, to complete all the functionalities of a Channel
+
+   `capabilities()`
+
+   `settings()`
+
+   `message()`
+
+   `subscribe()`
+
+   `unsubscribe()`
+
+4. **Create a Webhook** resource, and add the operations to receive data from the External Service which this Channel represents. The Webhook is an API endpoint exposed and registered in the External Service Platform.
+
+For example:
+
+```typescript
+const resource: Resource = new Resource({ name: 'Webhook', namePlural: 'Webhook' });
+resource.addOperation(new DummyChannelWebhook(resource));
+```
+
+[TODO: conclusion]
