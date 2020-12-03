@@ -172,7 +172,7 @@ When an Extension/Channel receives a message from the connected External Service
 1. **convert** the received, platform-specific message content to the corresponding Vivocha Message format;
 2. **send** the converted message to Vivocha.
 
-Step 2 can be fulfilled calling the `ExtensionAPI` `postToWebHook()` method. See `/src/extension.ts` code for details and signature.
+Step 2 can be fulfilled calling the `ExtensionAPI` **`postToWebHook()`** method. See `/src/extension.ts` code for details and signature.
 
 ### [Sending Media Attachments to Vivocha](#sending-media-attachments-to-vivocha)
 
@@ -181,7 +181,7 @@ When an Extension/Channel receives a message/event containing a media attachment
 1. **convert** the received, platform-specific attachment content to the corresponding Vivocha Message format;
 2. **send** the converted media attachment message to Vivocha.
 
-Step 2 can be fulfilled calling the `ExtensionAPI` `postMediaToWebHook()` method. See `/src/extension.ts` code for details and signature.
+Step 2 can be fulfilled calling the `ExtensionAPI` **`postMediaToWebHook()`** method. See `/src/extension.ts` code for details and signature.
 
 ### [Running an Extension or a Channel](#running-extension-or-a-channel)
 
