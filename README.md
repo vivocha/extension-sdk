@@ -1,6 +1,6 @@
 # Vivocha Extension SDK
 
-_JavaScript / TypeScript SDK to create **Extensions** and **Channels** for the [Vivocha](https://www.vivocha.com) platform_.
+_JavaScript/TypeScript SDK to create **Extensions** and **Channels** for the [Vivocha](https://www.vivocha.com) platform_.
 
 |              ![Logo](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension-sdk.svg?sanitize=true)              |
 | :----------------------------------------------------------------------------------------------------------------------------------------: |
@@ -67,7 +67,7 @@ The Vivocha Extension SDK allows to write custom **Extensions** and communicatio
 
 An Extension, and a Channel, developed using the SDK "automagically" exposes a well-defined REST API completely described by the [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md).
 
-When the developed Extension or Channel is deployed and available at a specific URL, the OpenAPI description is always available at `http(s)://<URL>/openapi.json`.
+When the developed Extension or Channel is deployed and available at a specific DEPLOYMENT_URL and PORT, the OpenAPI description is always available at `http(s)://<DEPLOYMENT_URL>:<PORT>/openapi.json`.
 
 It is important to know that a communication Channel is an Extension subclass, therefore it inherits all its basic functionalities.
 
