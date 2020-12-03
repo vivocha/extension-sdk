@@ -1,4 +1,4 @@
-# Vivocha Channel: Dummy Channel
+# Vivocha Channel example: Dummy Channel
 
 ## Running locally
 
