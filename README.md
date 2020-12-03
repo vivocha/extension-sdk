@@ -56,7 +56,7 @@ Extensions and Channels developed using this SDK automatically expose a well-def
       - [Message Method](#message-method)
       - [Webhook](#webhook)
     - [How to Write a Channel: Quick Start](#how-to-write-a-channel-quick-start)
-      - [Steps you need to write a Channel](#steps-you-need-to-write-a-channel)
+      - [Steps to Write a Channel](#steps-to-write-a-channel)
     - [[TODO: running the example and write conclusions]](#todo-running-the-example-and-write-conclusions)
 
 ---
@@ -569,12 +569,12 @@ First of all, it is necessary to understand and define which settings a Channel 
 It is necessary to take note of all the operations needed by the external service, its API and the correct message format.
 We can consider a Channel as a standalone web application that exposes a well-defined API described on `http(s)://<URL>/openapi.json` that implements Channel API methods and exposes a set of webhooks to receive data from the external service.
 
-#### Steps you need to write a Channel
+#### [Steps to Write a Channel](#steps-to-write-a-channel)
 
 The following steps sum up what you need to do to write a Channel:
 
-1. Import the required libraries, at least `@vivocha/extension-sdk`, and eventually the external service SDK libraries (if provided);
-2. Write the Channel implementation xtending the `ChannelAPI` class, specifiying the record type which represents the channel settings document to be saved in the database;
+1. Import the required libraries, at least the `@vivocha/extension-sdk` package, and eventually the external service SDK libraries, if available;
+2. write the Channel implementation extending the `ChannelAPI` class and declaring the record type which represents the channel settings to be saved in the database;
 
 For example:
 
@@ -582,15 +582,15 @@ For example:
 class DummyChannel extends ChannelAPI<DummyChannelRecord> {...}
 ```
 
-3. The following methods should be implemented, to include all the functionalities of a Channel:
+3. Implement the following methods, to add all the functionalities of a Channel:
 
-- Capabilities method `capabilities()` that represents the description of what the channel can do: type of message, direction etc.
-- Settings method `settings()`. It's a JSON Schema, Vivocha needs settings to create the Campaign Builder configuration UI for the Channel.
-- Message method `message()`:  called by Vivocha to send a message from Vivocha to third party service (to the final user).
-- Subscribe method  `subscribe()` called by Vivocha using/extension/subscribe endpoint to subscribe to the third party service. If it is necessary to call API to register/add this channel webhook on the third party service this is the place to do that
-- Unsubscribe method `unsubscribe()`called by Vivocha using `/extension/unsubscribe` endpoint to unsubscribe to the third party service. If it is necessary to call API to remove this channel webhook on the third party service this is the place to do that;
+- Capabilities method, `capabilities()`, that returns the description of what the Channel can do: types of supported messages, direction etc... Vivocha "invokes" it through calling the `/channel/capabilities` API endpoint;
+- settings method, `settings()`, that returns a JSON Schema object; Vivocha needs to know these settings to create the Campaign Builder configuration UI for the Channel; Vivocha "invokes" it through calling the `/extension/settings` API endpoint;
+- message method, `message()`,  called by Vivocha to send a message from Vivocha to the External Service Platform (thus, to the end-user). Vivocha "invokes" it through calling the `/channel/message` API endpoint;
+- subscribe method,  `subscribe()` called by Vivocha calling the `/extension/subscribe` endpoint to persist che Channel configuration and to eventually register it in the External Service Platform;
+- unsubscribe method `unsubscribe()`, called by Vivocha calling the `/extension/unsubscribe` endpoint to delete the Channel and eventually unsubscribe it from the External Service Platform.
   
-4. **Create a Webhook** resource, and add the operations to receive data from the External Service which this Channel represents. The Webhook is an API endpoint exposed and registered in the External Service Platform.
+1. **Create a Webhook** resource, and add the operations to receive data from the External Service which this Channel represents. The Webhook is an API endpoint exposed and registered in the External Service Platform.
    As described in sections above the **Webhook** is the entry point of the Channel and it is configured to receive events and messages from the related External Service Platform. The Channel exposes one or more Webhook endpoints, which URLs must be correctly configured in the External Service platform. To create a Webhook the Channel, that extends ChannelAPI, allows us to implement the `router()` method. In this method it will be necessary to add a routing path as a resourse with exposed operations to communicate with External Service Platform. An operation is fully configurable and accessibile  If third party service needs to validate the webhook, a validation operations should be added to the resource.
 
 ### [TODO: running the example and write conclusions]
