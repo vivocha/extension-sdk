@@ -1,10 +1,10 @@
 # Vivocha Extension SDK
 
-_JavaScript / TypeScript SDK to create **Extensions** and **Channels** for the [Vivocha](https://www.Vivocha.com) platform_.
+_JavaScript / TypeScript SDK to create **Extensions** and **Channels** for the [Vivocha](https://www.vivocha.com) platform_.
 
-|           ![Logo](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension-sdk.svg?sanitize=true)           |
-| :----------------------------------------------------------------------------------------------------------------------------------: |
-| [![NPM version](https://img.shields.io/npm/v/@Vivocha/bot-sdk.svg?style=flat)](https://www.npmjs.com/package/@vivocha/extension-sdk) |
+|              ![Logo](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension-sdk.svg?sanitize=true)              |
+| :----------------------------------------------------------------------------------------------------------------------------------------: |
+| [![NPM version](https://img.shields.io/npm/v/@vivocha/extension-sdk.svg?style=flat)](https://www.npmjs.com/package/@vivocha/extension-sdk) |
 
 ---
 
@@ -57,7 +57,7 @@ Extensions and Channels developed using this SDK automatically expose a well-def
       - [Webhook](#webhook)
     - [How to Write a Channel: Quick Start](#how-to-write-a-channel-quick-start)
       - [Steps you need to write a Channel](#steps-you-need-to-write-a-channel)
-    - [[TODO: running the exampke and write conclusions]](#todo-running-the-exampke-and-write-conclusions)
+    - [[TODO: running the example and write conclusions]](#todo-running-the-example-and-write-conclusions)
 
 ---
 
@@ -185,7 +185,7 @@ Step 2 can be fulfilled calling the `ExtensionAPI` `postMediaToWebHook()` method
 
 ### [Running an Extension or a Channel](#running-extension-or-a-channel)
 
-To run an Extension or a Channel you need to specify which database engine to use.
+To run an Extension or a Channel you need to specify which database engine to use and the port to which listen.
 
 By default the running code will try to connect to a AWS DynamoDB instance, unless MongoDB is specified.
 To use MongoDB just use the `MONGO_URL` environment property.
@@ -193,7 +193,7 @@ To use MongoDB just use the `MONGO_URL` environment property.
 For example:
 
 ```sh
-MONGO_URL=mongodb://<server>:37017 node dist/index
+MONGO_URL=mongodb://<server>:37017 PORT=8889 node dist/index
 ```
 
 Sometimes, for example at development time, you run your Extension or Channel locally, under an NGROK tunnel. Then, you need to run it specifying the base URL from which your channel is available (it will be used also to generate the public webhook URL to set in the External Service Platform).
@@ -201,18 +201,18 @@ Sometimes, for example at development time, you run your Extension or Channel lo
 To set the base URL, just use the corresponding environment variable, like in:
 
 ```sh
-BASE_URL=https://<public-url> MONGO_URL=mongodb://<server>:37017 node dist/index
+BASE_URL=https://<public-url> MONGO_URL=mongodb://<server>:37017 PORT=8889 node dist/index
 ```
 
 For example:
 
 ```sh
-BASE_URL=https://abcd123.ngrok.io MONGO_URL=mongodb://<server>:37017 node dist/index
+BASE_URL=https://abcd123.ngrok.io MONGO_URL=mongodb://<server>:37017 PORT=8889 node dist/index
 ```
 
 ## [What is a Channel](#what-is-channel)
 
-Channels are a particular type of Extension created subclassing the `ChannelAPI` class. 
+Channels are a particular type of Extension created subclassing the `ChannelAPI` class.
 
 A Channel acts like a proxy between Vivocha and an External messaging (chat) Service, e.g., Twitter or Facebook Messenger, and so on... . A Channel has the responsibility to receive and adapt messages and events coming from the External Service and to send them to Vivocha; and, to receive and adapt messages coming from Vivocha and to forward them to the External messaging Service using the right format. A Channel instance automatically exposes an API, fully described by the OpenAPI specification, as already written, which provides endpoints to fully manage the Channel entire lifecycle.
 
@@ -346,7 +346,7 @@ Assets are a set of media files used by the Channel configuration UI. Basically,
 
 Used assets are specified in the `ChannelAPI` subclass constructor, passing the Extension Info `x-vivocha` property, for example like in:
 
-```json
+```javascript
 'x-vivocha': {
           type: 'channel',
           subType: 'twitter',
@@ -434,7 +434,7 @@ const appToken = '{{APP_TOKEN}}';
 const name = '{{NAME}}';
 ```
 
-and it can use that resolved values as required by its own business logic.
+Therefore, the settings client app can use that resolved values as required by its own business logic.
 
 #### [Subscribe Method](#subscribe-method)
 
@@ -558,13 +558,16 @@ Thus, if the External Service doesn't have any available webhook registration AP
 
 ### [How to Write a Channel: Quick Start](#how-to-write-channel-quick-start)
 
-In this section will be described the steps necessary to create your own channel connected to the external service. To facilitate the process we created an a basic Channel implementation (see `[/examples/channel-boilerplate](PATH)`) to start developing a new Channel and to better understand the exposed methods and functionalities.
+In this section will be described the steps necessary to create your own channel connected to the external service. To facilitate the process we created an a basic Channel implementation (see the  at **[channel-boilerplate](https://github.com/vivocha/extension-sdk/tree/master/examples/channel-boilerplate)**) to quickly start developing a new Channel and to better understand the exposed methods and API.
 
-> IMPORTANT: To learn how to create and connect a channel to the Vivocha Platform, please start from the related [Vivocha Documentation](https://docs.Vivocha.com/vcb-channels).
+> IMPORTANT: To learn how to create and connect a Channel to the Vivocha Platform, please start from the related [Vivocha Documentation](https://docs.Vivocha.com/vcb-channels).
 
-As described in the sections above this Channel, named `channel-boilerplate` has an `index.ts` file, that is the main source code file where the main class extends the `ChannelAPI`. In this class are defined capabilities and settings, and are implements the `subscribe`,`unsubscribe`,`message` methods and the basic webhook operations.
-First of all, it is necessary to understand and define which configuration a channel needs to have by following the indications that the External Service platform requires to configure the integration, following its documentation. It is necessary take note of all the operations needed by the external service, its API and the correct message format.
-We can consider a Channel as a standalone web application that exposes a well-defined API described on `http(s)://<URL>/openapi.json` that implements Channel API methods and exposes a set of webhook to receive data from the external service. An example of a Channel can be build starting from the Boiler plate **TODO:Link to examples**.
+As described in the sections above this Channel, named `channel-boilerplate` has an `index.ts` file, where the main class extends the `ChannelAPI`.
+This class defines capabilities and settings, and implements the `subscribe`,`unsubscribe` and `message` methods and a basic webhook operation.
+
+First of all, it is necessary to understand and define which settings a Channel needs to have, usually by following the indications that the External Service platform requires to configure the integration.
+It is necessary to take note of all the operations needed by the external service, its API and the correct message format.
+We can consider a Channel as a standalone web application that exposes a well-defined API described on `http(s)://<URL>/openapi.json` that implements Channel API methods and exposes a set of webhooks to receive data from the external service.
 
 #### Steps you need to write a Channel
 
@@ -590,4 +593,4 @@ class DummyChannel extends ChannelAPI<DummyChannelRecord> {...}
 4. **Create a Webhook** resource, and add the operations to receive data from the External Service which this Channel represents. The Webhook is an API endpoint exposed and registered in the External Service Platform.
    As described in sections above the **Webhook** is the entry point of the Channel and it is configured to receive events and messages from the related External Service Platform. The Channel exposes one or more Webhook endpoints, which URLs must be correctly configured in the External Service platform. To create a Webhook the Channel, that extends ChannelAPI, allows us to implement the `router()` method. In this method it will be necessary to add a routing path as a resourse with exposed operations to communicate with External Service Platform. An operation is fully configurable and accessibile  If third party service needs to validate the webhook, a validation operations should be added to the resource.
 
-### [TODO: running the exampke and write conclusions]
+### [TODO: running the example and write conclusions]
