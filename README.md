@@ -2,9 +2,9 @@
 
 _JavaScript/TypeScript SDK to create **Extensions** and **Channels** for the [Vivocha](https://www.vivocha.com) platform_.
 
-|              ![Logo](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension-sdk.svg?sanitize=true)              |
-| :----------------------------------------------------------------------------------------------------------------------------------------: |
-| [![NPM version](https://img.shields.io/npm/v/@vivocha/extension-sdk.svg?style=flat)](https://www.npmjs.com/package/@vivocha/extension-sdk) |
+|      ![Logo](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension-sdk.svg?sanitize=true)       |
+| :-------------------------------------------------------------------------------------------------------------------------: |
+| [![NPM version](https://img.shields.io/npm/v/@vivocha/extension-sdk)](https://www.npmjs.com/package/@vivocha/extension-sdk) |
 
 ---
 
