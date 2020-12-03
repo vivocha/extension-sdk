@@ -19,6 +19,7 @@
     "request-promise-native": "^1.0.7"
   },
   "devDependencies": {
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.2",
+    "@types/express": "^4.17.6"
   }
 }

@@ -61,7 +61,7 @@ class DummyChannel extends ChannelAPI<DummyChannelRecord> {
     // set assets path (e.g. the icons)
     this.assetsPath = `${__dirname}/../assets`;
     // set logger
-    this.logger = getLogger('vivocha.channel.dummy-channel-messenger');
+    this.logger = getLogger('vivocha.channel.dummy-channel');
   }
   router(options?: RouterOptions): Promise<Router> {
     // create Webhook resource and add the operations to receive data from the third party service which this Channel represents

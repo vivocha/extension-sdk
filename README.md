@@ -582,7 +582,7 @@ We can consider a Channel as a standalone web application that exposes a well-de
 
 The following steps sum up what you need to write a Channel:
 
-- Import the required libraries, at least the `@vivocha/extension-sdk` package, and eventually the external service SDK libraries, if available;
+- Import the required libraries, at least the `@vivocha/extension-sdk` package, and eventually the external service SDK libraries, if available; If you are using TypeScript, also install and import the `@types/express` module.
 - write the Channel implementation extending the `ChannelAPI` class and declaring the record type, which represents the channel settings to be saved in the database.
 
 For example:
@@ -626,7 +626,7 @@ To make possible to Vivocha to communicate with the Channel it must be available
 
 - DummyChannel is now running and it is possible to verify that everything is working by checking its `openapi.json` description. Open a browser to the following URL:
   
-  `https://<BASE_URL_FROM_NGROK>:<PORT>/openapi.json`
+  `https://<BASE_URL_FROM_NGROK>/openapi.json`
 
 As you can see, the Channel web service exposes all the implemented methods endpoints thanks to the Extension/Channel API.
 
