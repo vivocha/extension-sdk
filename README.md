@@ -12,7 +12,7 @@ _JavaScript/TypeScript SDK to create **Extensions** and **Channels** for the [Vi
 
 ## Node Version
 
-> **Tested with Node.js version 12.x**.
+**Tested with Node.js version 12.x**.
 
 To start with the Extension SDK, it is recommended to install it from NPM:
 
@@ -58,6 +58,7 @@ Extensions and Channels developed using this SDK automatically expose a well-def
     - [How to Write a Channel: Quick Start](#how-to-write-a-channel-quick-start)
       - [Steps to Write a Channel](#steps-to-write-a-channel)
       - [Running the Channel Example](#running-the-channel-example)
+  - [Writing an Asset Manager Extension](#writing-an-asset-manager-extension)
 
 ---
 
@@ -631,3 +632,25 @@ To make possible to Vivocha to communicate with the Channel it must be available
 As you can see, the Channel web service exposes all the implemented methods endpoints thanks to the Extension/Channel API.
 
 - If the `openapi.json` is correctly loaded you can now configure the channel in Vivocha, following the related [Vivocha Documentation](https://docs.vivocha.com/vcb-channels).
+
+## [Writing an Asset Manager Extension](#writing-an-asset-manager-extension)
+
+The Extension SDK also exports a special `ExtensionAPI` subclass to write Asset Manager extensions.
+
+The class is `AssetManagerAPI` and, like the `ChannelAPI` class, it provides the required logic to implement and expose all the needed API endpoints to integrate an asset manager with the Vivocha Platform.
+
+Briefly, an Asset Manager allows to upload/create, list, retrieve and delete media files to/from a storage service, remote or local, like AWS S3 or other cloud-based storage systems.
+
+After subclassing the SDK `AssetManagerAPI` class, the methods to implement in the derived class are listed in the following table, along with the corresponding API endpoints that are automatically exposed:
+
+| Class Methods        | API Endpoints      | DESCRIPTION                                                     |
+| -------------------- | ------------------ | --------------------------------------------------------------- |
+| `create()`           | `/assets`          | Create/upload the referenced asset in the storage service       |
+| `retrieve()`         | `/assets/retrieve` | Retrieve the requested asset from the storage service           |
+| `list()`             | `/assets/list`     | Retrieve a list of assets from the storage service              |
+| `remove()`           | `/assets/remove`   | Definitely remove the referenced asset from the storage service |
+| (optional) `usage()` | `/assets/usage`    | get the total usage of the storage service                      |
+
+See [AssetManagerAPI](https://github.com/vivocha/extension-sdk/blob/master/src/asset_manager.ts) class for more details.
+
+---
