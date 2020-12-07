@@ -2,10 +2,6 @@
 
 _JavaScript/TypeScript SDK to create **Extensions** and **Channels** for the [Vivocha](https://www.vivocha.com) platform_.
 
-|      ![Logo](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension-sdk.svg?sanitize=true)       |
-| :-------------------------------------------------------------------------------------------------------------------------: |
-| [![NPM version](https://img.shields.io/npm/v/@vivocha/extension-sdk)](https://www.npmjs.com/package/@vivocha/extension-sdk) |
-
 ---
 
 > **IMPORTANT**: The Extension SDK is intended to be used to develop Extensions and Channels for the Vivocha Platform **version > 7.x**
@@ -19,6 +15,10 @@ To start with the Extension SDK, it is recommended to install it from NPM:
 ```sh
 npm i @vivocha/extension-sdk
 ```
+
+|      ![Logo](https://raw.githubusercontent.com/vivocha/extension-sdk/master/docs/img/extension-sdk.svg?sanitize=true)       |
+| :-------------------------------------------------------------------------------------------------------------------------: |
+| [![NPM version](https://img.shields.io/npm/v/@vivocha/extension-sdk)](https://www.npmjs.com/package/@vivocha/extension-sdk) |
 
 ---
 
