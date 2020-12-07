@@ -15,11 +15,7 @@ _JavaScript/TypeScript SDK to create **Extensions** and **Channels** for the [Vi
 
 To start with the Extension SDK, it is recommended to install it from NPM:
 
-```sh
-npm i @vivocha/extension-sdk
-```
-
-|                                                                                                                             |
+|                                               `npm i @vivocha/extension-sdk`                                                |
 | :-------------------------------------------------------------------------------------------------------------------------: |
 | [![NPM version](https://img.shields.io/npm/v/@vivocha/extension-sdk)](https://www.npmjs.com/package/@vivocha/extension-sdk) |
 
