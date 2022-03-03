@@ -14,7 +14,7 @@ export class MongoCollection<T extends object> extends PersistentCollection<T> {
   constructor(opts: MongoCollectionOptions) {
     super(opts);
     this.db = (async () => {
-      const dbClient = await MongoClient.connect(opts.mongoUrl, { useNewUrlParser: true });
+      const dbClient = await MongoClient.connect(opts.mongoUrl);
       return dbClient.db(opts.db);
     })();
     this.collection = (async () => {
@@ -32,7 +32,7 @@ export class MongoCollection<T extends object> extends PersistentCollection<T> {
   }
   async get(key: string): Promise<T> {
     const c = await this.collection;
-    return c.findOne({ [this.opts.key]: key });
+    return c.findOne({ [this.opts.key]: key }) as Promise<T>;
   }
   async remove(key: string): Promise<any> {
     const c = await this.collection;
