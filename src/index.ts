@@ -1,5 +1,6 @@
 export * from '@vivocha/public-entities';
 export * from 'arrest';
+export * from 'arrest/dist/mongo/util';
 export * from 'debuggo';
 export * from './asset_manager';
 export * from './channel';
