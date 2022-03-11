@@ -50,20 +50,24 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
   constructor(info: ExtensionInfo, collection?: PersistentCollection<Record>, tempCollection?: PersistentCollection<TempRecord>);
   constructor(data: any, collection?: PersistentCollection<Record>, tempCollection?: PersistentCollection<TempRecord>) {
     if (typeof data === 'string') {
-      super(({
+      super({
         'x-vivocha': {
           type: data as ExtensionType
         }
-      } as any) as ExtensionInfo);
+      } as any as ExtensionInfo);
     } else {
       super(data as ExtensionInfo);
     }
     this.document.components.schemas = {
       errorResponse: this.document.components.schemas.errorResponse
     };
+    // TODO: the following statement has been removed because it creates issues with schemas, remove code after testing it
+    // Arrest default params already has the id
+    /*
     this.document.components.parameters = {
       id: this.document.components.parameters.id
     };
+    */
     this.collection = collection;
     this.tempCollection = tempCollection;
     this.registerSchema('common', require('@vivocha/public-entities/schemas/common.json'));
