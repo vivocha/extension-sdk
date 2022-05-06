@@ -237,7 +237,7 @@ class DummyChannel extends ChannelAPI<DummyChannelRecord> {
 class DummyChannelWebhook extends Operation {
   api: DummyChannel;
   constructor(resource: Resource) {
-    super(resource, '/:campaignId/:serviceId', 'post', 'dummyChannelEvent');
+    super(resource, '/', 'post', 'dummyChannelEvent');
   }
 
   protected getCustomInfo(opts?: any): OpenAPIV3.OperationObject {
