@@ -258,14 +258,14 @@ The following figure shows how a Channel positions in the Vivocha flow and which
 
 Next table lists the main Channel instance methods, and the API endpoints corresponding to each method.
 
-| Class Methods                  | API Endpoints            | DESCRIPTION                                                                                                                                                                 |
-| ------------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `capabilities()`               | `/channel/capabilities`  | Returns Channel capabilities that represent the description of what the channel can do in terms communication type, in term of messages and messages flow direction         |
-| `settings()`                   | `/extension/settings`    | Returns the configuration settings description (JSON Schema) about the Channel; Vivocha uses that JSON Schema to build a Channel Configuration UI  in the Campaign Builder. |
-| `message()`                    | `/channel/message`       | Send a message from Vivocha to External Service                                                                                                                             |
-| `subscribe()`                  | `/extension/subscribe`   | Called by Vivocha to subscribe to the External Service                                                                                                                      |
-| `unsubscribe()`                | `/extension/unsubscribe` | Called by Vivocha to unsubscribe from the External Service                                                                                                                  |
-| configurable Webhook operation | `/webhook/<Custom_PATH>` | Called by External Service to send messages and events to Vivocha, the Channel imple entation defines how the Webhook URL is composed                                       |
+| Class Methods                  | API Endpoints            | DESCRIPTION                                                                                                                                                                |
+| ------------------------------ | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `capabilities()`               | `/channel/capabilities`  | Returns Channel capabilities that represent the description of what the channel can do in terms communication type, in term of messages and messages flow direction        |
+| `settings()`                   | `/extension/settings`    | Returns the configuration settings description (JSON Schema) about the Channel; Vivocha uses that JSON Schema to build a Channel Configuration UI in the Campaign Builder. |
+| `message()`                    | `/channel/message`       | Send a message from Vivocha to External Service                                                                                                                            |
+| `subscribe()`                  | `/extension/subscribe`   | Called by Vivocha to subscribe to the External Service                                                                                                                     |
+| `unsubscribe()`                | `/extension/unsubscribe` | Called by Vivocha to unsubscribe from the External Service                                                                                                                 |
+| configurable Webhook operation | `/webhook/<Custom_PATH>` | Called by External Service to send messages and events to Vivocha, the Channel imple entation defines how the Webhook URL is composed                                      |
 
 #### [Capabilities](#capabilities)
 
@@ -320,7 +320,7 @@ An example of a multilanguage strings JSON content is like:
         "state": "final"
       }
     }
-  },  
+  },
   {
     "id": "apiToken.LABEL",
     "values": {
@@ -378,7 +378,7 @@ Possible values are:
 
 - `toggleable`: the field can be shown clicking the "toggle button"
 
-- `masked`: masked by *, like for "password type fields"
+- `masked`: masked by \*, like for "password type fields"
 
 An example of a `settings()` method implementation returning a JSON Schema is the following:
 
@@ -482,19 +482,20 @@ Message requests are JSON objects with following properties:
 
 **Environment**:
 
-| PROPERTY           | VALUE  | DESCRIPTION                                                              |
-| ------------------ | ------ | ------------------------------------------------------------------------ |
-| **`campaignId`**   | string | Vivocha Campaign Id to which the Channel belongs                         |
-| **`channelId`**    | string | Id of the Channel                                                        |
-| **`entryPointId`** | string | Id of the Entry Point used to start receiving contacts from this channel |
-| `contactId`        | string | Vivocha contact Id                                                       |
+| PROPERTY            | VALUE  | DESCRIPTION                                                                  |
+| ------------------- | ------ | ---------------------------------------------------------------------------- |
+| **`campaignId`**    | string | Vivocha Campaign Id to which the Channel belongs                             |
+| **`channelId`**     | string | Id of the Channel                                                            |
+| **`entryPointId`**  | string | Id of the Entry Point used to start receiving contacts from this channel     |
+| `contactId`         | string | Vivocha contact Id                                                           |
+| `dataCollectionIds` | array  | List of Data Collection ids associated to the Entry Point. Array of strings. |
 
 #### [Webhook](#webhook)
 
 A Webhook is the Channel endpoint called by the External Service Platform to send events and messages to the Channel instance.
 The `ChannelAPI` subclass could expose one or more webooks and endpoints, which URLs must be correctly configured in the External Service platform.
 To create a Webhook the `ChannelAPI` subclass requires to implement the `router()` method.
-In this method it is possible to add a new routing path (a resource) with exposed API operations to communicate with the External Service Platform. The Webhook URL is fully configurable and it will be automatically listed among paths in the Channel OpenAPI description, always available at `http(s)://<URL>/openapi.json`.  
+In this method it is possible to add a new routing path (a resource) with exposed API operations to communicate with the External Service Platform. The Webhook URL is fully configurable and it will be automatically listed among paths in the Channel OpenAPI description, always available at `http(s)://<URL>/openapi.json`.
 
 The `router()` method should be implemented like in the following example:
 
@@ -568,7 +569,7 @@ Thus, if the External Service doesn't have any available webhook registration AP
 
 ### [How to Write a Channel: Quick Start](#how-to-write-channel-quick-start)
 
-In this section will be described the steps necessary to create your own channel connected to the external service. To facilitate the process we created an a basic Channel implementation (see the  at **[channel-boilerplate](https://github.com/vivocha/extension-sdk/tree/master/examples/channel-boilerplate)**) to quickly start developing a new Channel and to better understand the exposed methods and API.
+In this section will be described the steps necessary to create your own channel connected to the external service. To facilitate the process we created an a basic Channel implementation (see the at **[channel-boilerplate](https://github.com/vivocha/extension-sdk/tree/master/examples/channel-boilerplate)**) to quickly start developing a new Channel and to better understand the exposed methods and API.
 
 > IMPORTANT: To learn how to create and connect a Channel to the Vivocha Platform, please start from the related [Vivocha Documentation](https://docs.vivocha.com/vcb-channels).
 
@@ -596,12 +597,12 @@ class DummyChannel extends ChannelAPI<DummyChannelRecord> {...}
 
   - Capabilities method, `capabilities()`, that returns the description of what the Channel can do: types of supported messages, direction etc... Vivocha "invokes" it through calling the `/channel/capabilities` API endpoint;
   - settings method, `settings()`, that returns a JSON Schema object; Vivocha needs to know these settings to create the Campaign Builder configuration UI for the Channel; Vivocha "invokes" it through calling the `/extension/settings` API endpoint;
-  - message method, `message()`,  called by Vivocha to send a message from Vivocha to the External Service Platform (thus, to the end-user). Vivocha "invokes" it through calling the `/channel/message` API endpoint;
-  - subscribe method,  `subscribe()` called by Vivocha calling the `/extension/subscribe` endpoint to persist che Channel configuration and to eventually register it in the External Service Platform;
+  - message method, `message()`, called by Vivocha to send a message from Vivocha to the External Service Platform (thus, to the end-user). Vivocha "invokes" it through calling the `/channel/message` API endpoint;
+  - subscribe method, `subscribe()` called by Vivocha calling the `/extension/subscribe` endpoint to persist che Channel configuration and to eventually register it in the External Service Platform;
   - unsubscribe method `unsubscribe()`, called by Vivocha calling the `/extension/unsubscribe` endpoint to delete the Channel and eventually unsubscribe it from the External Service Platform.
 
 - Create a **Webhook** resource, and add the operations to receive data from the External Service which this Channel represents. The Webhook is an API endpoint exposed and registered in the External Service Platform.
-   As described in sections above the **Webhook** is the entry point of the Channel and it is configured to receive events and messages from the related External Service Platform. The Channel exposes one or more Webhook endpoints, which URLs must be correctly configured in the External Service platform. To create a Webhook the Channel, that extends ChannelAPI, allows us to implement the `router()` method. In this method it will be necessary to add a routing path as a resourse with exposed operations to communicate with External Service Platform. An operation is fully configurable and accessibile  If third party service needs to validate the webhook, a validation operations should be added to the resource.
+  As described in sections above the **Webhook** is the entry point of the Channel and it is configured to receive events and messages from the related External Service Platform. The Channel exposes one or more Webhook endpoints, which URLs must be correctly configured in the External Service platform. To create a Webhook the Channel, that extends ChannelAPI, allows us to implement the `router()` method. In this method it will be necessary to add a routing path as a resourse with exposed operations to communicate with External Service Platform. An operation is fully configurable and accessibile If third party service needs to validate the webhook, a validation operations should be added to the resource.
 
 #### [Running the Channel Example](#running-the-channel-example)
 
@@ -614,19 +615,19 @@ In order to run and start the Channel example and to learn how you can do a subs
 To make possible to Vivocha to communicate with the Channel it must be available at a public URL. To achieve this you can use, for example, an [NGROK tunnel](https://ngrok.com/) (see steps below).
 
 - In the `/examples/channel-boilerplate` folder run the following commands:
-  
-    `npm install`
 
-    `npm run build`
+  `npm install`
+
+  `npm run build`
 
 - Choose a PORT and run NGROK using the command: `ngrok http <PORT>`. That PORT is the same PORT used below to run the channel. Running the former command, NGROK assignes a public HTTPS URL. Copy it and use it as BASE_URL_FROM_NGROK when running the Channel.
 
 - Run the Channel by the command:
-  
-    `PORT=<PORT> MONGO_URL=<YOUR_MONGO_INSTANCE_URL> BASE_URL=<BASE_URL_FROM_NGROK> node dist/index`
+
+  `PORT=<PORT> MONGO_URL=<YOUR_MONGO_INSTANCE_URL> BASE_URL=<BASE_URL_FROM_NGROK> node dist/index`
 
 - DummyChannel is now running and it is possible to verify that everything is working by checking its `openapi.json` description. Open a browser to the following URL:
-  
+
   `https://<BASE_URL_FROM_NGROK>/openapi.json`
 
 As you can see, the Channel web service exposes all the implemented methods endpoints thanks to the Extension/Channel API.
