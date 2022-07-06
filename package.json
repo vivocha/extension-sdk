@@ -29,7 +29,7 @@
   "dependencies": {
     "@vivocha/public-entities": "beta",
     "arrest": "^13.0.2",
-    "aws-sdk": "^2.1085.0",
+    "aws-sdk": "^2.1168.0",
     "camelcase": "^7.0.0",
     "debuggo": "^1.4.1",
     "eredita": "^1.2.1",

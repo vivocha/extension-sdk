@@ -1,5 +1,7 @@
-import { DynamoDB } from 'aws-sdk';
 import { PersistentCollection, PersistentCollectionOptions } from './index.js';
+import awsSDK from 'aws-sdk';
+import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client.js';
+const { DynamoDB } = awsSDK;
 
 export interface DynamoTableOptions extends PersistentCollectionOptions {
   region: string;
@@ -10,7 +12,7 @@ export interface DynamoTableOptions extends PersistentCollectionOptions {
 
 export class DynamoTable<T extends object> extends PersistentCollection<T> {
   protected opts: DynamoTableOptions;
-  protected table: Promise<DynamoDB.DocumentClient>;
+  protected table: Promise<DocumentClient>;
 
   constructor(opts: DynamoTableOptions) {
     super(opts);
@@ -61,7 +63,7 @@ export class DynamoTable<T extends object> extends PersistentCollection<T> {
   }
   async get(key: string): Promise<T> {
     const table = await this.table;
-    const rawData: DynamoDB.DocumentClient.GetItemOutput = await table
+    const rawData: DocumentClient.GetItemOutput = await table
       .get({
         TableName: this.opts.name,
         Key: { ExtensionKey: key }
@@ -104,7 +106,7 @@ export class DynamoTable<T extends object> extends PersistentCollection<T> {
       attr[vk] = _data[k];
     }
 
-    const opts: DynamoDB.DocumentClient.UpdateItemInput = {
+    const opts: DocumentClient.UpdateItemInput = {
       TableName: this.opts.name,
       Key: { ExtensionKey: data[this.opts.key] },
       ExpressionAttributeValues: attr,
