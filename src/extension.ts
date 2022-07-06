@@ -1,6 +1,7 @@
 import { AssetManagerAPITypes, ExtensionAPITypes, ExtensionInfo, ExtensionType, MultiLanguageString } from '@vivocha/public-entities';
 import { API, APIRequest, APIRequestHandler, APIResponse, Method, Operation, Resource } from 'arrest';
-import { json as jsonParser } from 'body-parser';
+import bodyParserPkg from 'body-parser';
+const { json: jsonParser } = bodyParserPkg;
 import camelcase from 'camelcase';
 import { getLogger } from 'debuggo';
 import express from 'express';
@@ -13,7 +14,9 @@ import path from 'path';
 import { PersistentCollection } from './persistence/index.js';
 import { DynamoTable } from './persistence/dynamo.js';
 import { MongoCollection } from './persistence/mongo.js';
+import { createRequire } from 'node:module';
 
+const require = createRequire(import.meta.url);
 const logger = getLogger('extension-sdk');
 
 export interface APIContext {
