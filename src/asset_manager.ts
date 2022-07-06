@@ -2,9 +2,9 @@ import { AssetManagerAPITypes } from '@vivocha/public-entities';
 import { APIRequest, APIRequestHandler, APIResponse, Resource } from 'arrest';
 import { NextFunction, Router, RouterOptions } from 'express';
 import { unlinkSync } from 'fs';
-import * as multer from 'multer';
+import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-police';
-import { APIContext, ExtensionAPI, ExtensionBaseOperation, IExtensionSettings } from './extension';
+import { APIContext, ExtensionAPI, ExtensionBaseOperation, IExtensionSettings } from './extension.js';
 
 export interface IAssetManagerAPI {
   create(

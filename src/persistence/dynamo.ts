@@ -1,5 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
-import { PersistentCollection, PersistentCollectionOptions } from '.';
+import { PersistentCollection, PersistentCollectionOptions } from './index.js';
 
 export interface DynamoTableOptions extends PersistentCollectionOptions {
   region: string;

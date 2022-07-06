@@ -1,5 +1,5 @@
 import { Collection, Db, MongoClient } from 'mongodb';
-import { DEFAULT_TTL, PersistentCollection, PersistentCollectionOptions } from '.';
+import { DEFAULT_TTL, PersistentCollection, PersistentCollectionOptions } from './index.js';
 
 export interface MongoCollectionOptions extends PersistentCollectionOptions {
   mongoUrl: string;

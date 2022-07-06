@@ -2,10 +2,10 @@ import { ChannelAPITypes, ExtensionAPITypes } from '@vivocha/public-entities';
 import { APIRequest, APIResponse, Resource } from 'arrest';
 import { createHash } from 'crypto';
 import { NextFunction, Router, RouterOptions } from 'express';
-import { createReadStream, statSync } from 'fs';
+import { statSync } from 'fs';
+import needle from 'needle';
 import { OpenAPIV3 } from 'openapi-police';
-import * as request from 'request-promise-native';
-import { APIContext, ExtensionAPI, ExtensionBaseOperation, ExtensionBaseOperationProxy, IExtensionAsynchronous, IExtensionSettings } from './extension';
+import { APIContext, ExtensionAPI, ExtensionBaseOperation, ExtensionBaseOperationProxy, IExtensionAsynchronous, IExtensionSettings } from './extension.js';
 
 export interface IChannelAPI {
   capabilities(context: APIContext): Promise<ChannelAPITypes.Capabilities>;
@@ -14,8 +14,10 @@ export interface IChannelAPI {
   allocateNumber?(request: ChannelAPITypes.AllocateNumber.Request, context: APIContext): Promise<ChannelAPITypes.AllocateNumber.Response>;
 }
 
-export abstract class ChannelAPI<Record extends object = any, TempRecord extends object = any> extends ExtensionAPI<Record, TempRecord>
-  implements IExtensionSettings, IExtensionAsynchronous, IChannelAPI {
+export abstract class ChannelAPI<Record extends object = any, TempRecord extends object = any>
+  extends ExtensionAPI<Record, TempRecord>
+  implements IExtensionSettings, IExtensionAsynchronous, IChannelAPI
+{
   abstract settings(context: APIContext): OpenAPIV3.SchemaObject;
   abstract subscribe(request: ExtensionAPITypes.Subscribe.Request, context: APIContext): Promise<ExtensionAPITypes.Subscribe.Response>;
   abstract unsubscribe(request: ExtensionAPITypes.Messages.Request, context: APIContext): Promise<any>;
@@ -73,30 +75,36 @@ export abstract class ChannelAPI<Record extends object = any, TempRecord extends
     const id = `attachments/${createHash('sha256')
       .update(environment.acct_id + path + mimetype + (originalname || ''))
       .digest('hex')}`;
-    const opts = {
-      url: `${environment.apiUrl}/assets`,
-      qs: {
-        id
-      },
-      method: 'POST',
-      auth: {
-        bearer: environment.token
-      },
-      formData: {
-        file: {
-          value: createReadStream(path),
-          options: {
-            contentType: mimetype,
-            knownLength: statSync(path).size
-          }
+
+    const url = id ? `${environment.apiUrl}/assets?id=${id}` : `${environment.apiUrl}/assets`;
+
+    // read the file and create a stream with needle
+    const stream = needle.get(path); // needle.<method> returns a stream
+
+    const formData = {
+      file: {
+        value: stream,
+        options: {
+          contentType: mimetype,
+          knownLength: statSync(path).size
         }
       }
     };
+
     if (originalname) {
-      (opts.formData.file.options as any).filename = originalname;
+      (formData.file.options as any).filename = originalname;
     }
-    const result = JSON.parse(await request(opts));
-    return result.url;
+
+    const result = await needle('post', url, formData, {
+      multipart: true,
+      headers: {
+        authorization: `Bearer ${environment.token}`,
+        'Content-Length': statSync(path).size,
+        'Content-Type': mimetype
+      }
+    });
+
+    return result.body.url;
   }
 }
 

@@ -1,18 +1,18 @@
 import { AssetManagerAPITypes, ExtensionAPITypes, ExtensionInfo, ExtensionType, MultiLanguageString } from '@vivocha/public-entities';
 import { API, APIRequest, APIRequestHandler, APIResponse, Method, Operation, Resource } from 'arrest';
 import { json as jsonParser } from 'body-parser';
-import * as camelcase from 'camelcase';
+import camelcase from 'camelcase';
 import { getLogger } from 'debuggo';
-import * as express from 'express';
+import express from 'express';
 import { NextFunction, Router, RouterOptions } from 'express';
-import { createReadStream, readFile, readFileSync } from 'fs';
-import * as mustache from 'mustache';
+import { readFile, readFileSync } from 'fs';
+import mustache from 'mustache';
+import needle from 'needle';
 import { OpenAPIV3 } from 'openapi-police';
-import * as path from 'path';
-import * as request from 'request-promise-native';
-import { PersistentCollection } from './persistence';
-import { DynamoTable } from './persistence/dynamo';
-import { MongoCollection } from './persistence/mongo';
+import path from 'path';
+import { PersistentCollection } from './persistence/index.js';
+import { DynamoTable } from './persistence/dynamo.js';
+import { MongoCollection } from './persistence/mongo.js';
 
 const logger = getLogger('extension-sdk');
 
@@ -265,13 +265,19 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
       payload
     };
     logger.debug('postToWebhook', url, JSON.stringify(body, null, 2));
-    return await request({
-      url,
-      method: 'POST',
-      json: true,
-      body
+
+    // return await request({
+    //   url,
+    //   method: 'POST',
+    //   json: true,
+    //   body
+    // });
+
+    return await needle('post', url, body, {
+      json: true
     });
   }
+
   async postMediaToWebhook(
     environment: ExtensionAPITypes.Environment,
     event: string,
@@ -287,21 +293,30 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
       payload
     };
     logger.debug('postMediaToWebhook', url, JSON.stringify(body, null, 2));
-    const response = await request({
-      url,
-      method: 'POST',
-      formData: {
-        file: {
-          value: createReadStream(asset.path),
-          options: {
-            filename: asset.originalname,
-            contentType: asset.mimetype
-          }
-        },
-        opts: JSON.stringify(body)
+
+    // read the file and create a stream with needle
+    const stream = needle.get(asset.path); // needle.<method> returns a stream
+
+    var formData = {
+      opts: JSON.stringify(body),
+      file: {
+        value: stream,
+        options: {
+          filename: asset.originalname,
+          contentType: asset.mimetype
+        }
+      }
+    };
+
+    const response = await needle('post', url, formData, {
+      multipart: true,
+      headers: {
+        // 'Content-Disposition': `form-data; name="${asset.originalname}"`,
+        'Content-Type': asset.mimetype
       }
     });
-    return response ? JSON.parse(response) : undefined;
+
+    return response ? JSON.parse(response.body) : undefined;
   }
 
   /**

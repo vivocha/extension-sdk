@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "es2020",
     "target": "es2020",
     "noImplicitAny": false,
     "sourceMap": true,
     "declaration": true,
     "outDir": "dist",
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node"
   },
   "include": ["src/**/*.ts"]
 }
