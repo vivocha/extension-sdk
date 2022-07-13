@@ -299,18 +299,14 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
 
     // read the file and create a stream with needle
     const buffer = readFileSync(asset.path);
-
     var formData = {
       opts: JSON.stringify(body),
       file: {
-        value: buffer,
-        options: {
-          filename: asset.originalname,
-          contentType: asset.mimetype
-        }
+        buffer: buffer,
+        filename: asset.originalname,
+        content_type: asset.mimetype
       }
     };
-
     const response = await needle('post', url, formData, { multipart: true });
     return response ? response : undefined;
   }
