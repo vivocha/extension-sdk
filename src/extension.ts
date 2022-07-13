@@ -277,7 +277,9 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
     // });
 
     return await needle('post', url, body, {
-      json: true
+      json: true,
+      follow: 2,
+      follow_keep_method: true
     });
   }
 
@@ -307,7 +309,7 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
         content_type: asset.mimetype
       }
     };
-    const response = await needle('post', url, formData, { multipart: true });
+    const response = await needle('post', url, formData, { multipart: true, follow: 2, follow_keep_method: true });
     return response ? response : undefined;
   }
 
