@@ -6,7 +6,7 @@ import camelcase from 'camelcase';
 import { getLogger } from 'debuggo';
 import express from 'express';
 import { NextFunction, Router, RouterOptions } from 'express';
-import { readFile, readFileSync } from 'fs';
+import { createReadStream, readFile, readFileSync } from 'fs';
 import mustache from 'mustache';
 import needle from 'needle';
 import { OpenAPIV3 } from 'openapi-police';
@@ -298,12 +298,12 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
     logger.debug('postMediaToWebhook', url, JSON.stringify(body, null, 2));
 
     // read the file and create a stream with needle
-    const stream = needle.get(asset.path); // needle.<method> returns a stream
+    const buffer = readFileSync(asset.path);
 
     var formData = {
       opts: JSON.stringify(body),
       file: {
-        value: stream,
+        value: buffer,
         options: {
           filename: asset.originalname,
           contentType: asset.mimetype
@@ -311,15 +311,8 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
       }
     };
 
-    const response = await needle('post', url, formData, {
-      multipart: true,
-      headers: {
-        // 'Content-Disposition': `form-data; name="${asset.originalname}"`,
-        'Content-Type': asset.mimetype
-      }
-    });
-
-    return response ? JSON.parse(response.body) : undefined;
+    const response = await needle('post', url, formData, { multipart: true });
+    return response ? response : undefined;
   }
 
   /**
