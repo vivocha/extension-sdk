@@ -1,6 +1,6 @@
 {
   "name": "@vivocha/extension-sdk",
-  "version": "2.1.0-beta-esm.2",
+  "version": "2.1.0-beta-esm.3",
   "description": "Vivocha Extensions and Channels SDK for Node.js",
   "type": "module",
   "main": "dist/index.js",
