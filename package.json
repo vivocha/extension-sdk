@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@vivocha/public-entities": "beta",
-    "arrest": "^13.0.2",
+    "arrest": "^13.2.0",
     "aws-sdk": "^2.1168.0",
     "camelcase": "^7.0.0",
     "debuggo": "^1.4.1",
