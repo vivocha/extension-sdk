@@ -50,11 +50,11 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
   constructor(info: ExtensionInfo, collection?: PersistentCollection<Record>, tempCollection?: PersistentCollection<TempRecord>);
   constructor(data: any, collection?: PersistentCollection<Record>, tempCollection?: PersistentCollection<TempRecord>) {
     if (typeof data === 'string') {
-      super(({
+      super({
         'x-vivocha': {
           type: data as ExtensionType
         }
-      } as any) as ExtensionInfo);
+      } as any as ExtensionInfo);
     } else {
       super(data as ExtensionInfo);
     }
@@ -249,6 +249,10 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
         }
       });
     }
+    base.options('*', this.cors, function (req, res) {
+      res.send();
+    });
+
     base.use(await super.router(options));
     return base;
   }
