@@ -1,6 +1,6 @@
 {
   "name": "@vivocha/extension-sdk",
-  "version": "1.4.0-cors.0",
+  "version": "1.4.0",
   "description": "Vivocha Extensions and Channels SDK for Node.js",
   "main": "dist/index.js",
   "author": "Vivocha Development Team <dev@vivocha.com> (https://www.vivocha.com)",
