@@ -253,6 +253,10 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
         }
       });
     }
+    base.options('*', this.cors, function (req, res) {
+      res.send();
+    });
+
     base.use(await super.router(options));
     return base;
   }
