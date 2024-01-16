@@ -27,7 +27,7 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "@vivocha/public-entities": "iengine",
+    "@vivocha/public-entities": "^8.4.0",
     "arrest": "^9.1.0",
     "aws-sdk": "^2.588.0",
     "camelcase": "^5.3.1",
