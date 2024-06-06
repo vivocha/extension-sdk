@@ -1,4 +1,4 @@
-import { AssetManagerAPITypes, ExtensionAPITypes, ExtensionInfo, ExtensionType, MultiLanguageString } from '@vivocha/public-entities';
+import { AssetManagerAPITypes, ExtensionAPITypes, ExtensionInfo, ExtensionType, MultiLanguageString } from '@vivocha/public-types';
 import { API, APIRequest, APIRequestHandler, APIResponse, Method, Operation, Resource } from 'arrest';
 import { json as jsonParser } from 'body-parser';
 import * as camelcase from 'camelcase';
@@ -66,15 +66,15 @@ export class ExtensionAPI<Record extends object = any, TempRecord extends object
     };
     this.collection = collection;
     this.tempCollection = tempCollection;
-    this.registerSchema('common', require('@vivocha/public-entities/schemas/common.json'));
-    this.registerSchema('protocol', require('@vivocha/public-entities/schemas/extension_protocol.json'));
-    this.registerSchema('text_message', require('@vivocha/public-entities/schemas/text_message.json'));
-    this.registerSchema('is_writing_message', require('@vivocha/public-entities/schemas/is_writing_message.json'));
-    this.registerSchema('ack_message', require('@vivocha/public-entities/schemas/ack_message.json'));
-    this.registerSchema('action_message', require('@vivocha/public-entities/schemas/action_message.json'));
-    this.registerSchema('attachment_message', require('@vivocha/public-entities/schemas/attachment_message.json'));
-    this.registerSchema('postback_message', require('@vivocha/public-entities/schemas/postback_message.json'));
-    this.registerSchema('location_message', require('@vivocha/public-entities/schemas/location_message.json'));
+    this.registerSchema('common', require('@vivocha/public-types/schemas/common.json'));
+    this.registerSchema('protocol', require('@vivocha/public-types/schemas/extension_protocol.json'));
+    this.registerSchema('text_message', require('@vivocha/public-types/schemas/text_message.json'));
+    this.registerSchema('is_writing_message', require('@vivocha/public-types/schemas/is_writing_message.json'));
+    this.registerSchema('ack_message', require('@vivocha/public-types/schemas/ack_message.json'));
+    this.registerSchema('action_message', require('@vivocha/public-types/schemas/action_message.json'));
+    this.registerSchema('attachment_message', require('@vivocha/public-types/schemas/attachment_message.json'));
+    this.registerSchema('postback_message', require('@vivocha/public-types/schemas/postback_message.json'));
+    this.registerSchema('location_message', require('@vivocha/public-types/schemas/location_message.json'));
   }
   async ready(): Promise<this> {
     if (this.collection) {

@@ -1,4 +1,4 @@
-import { AssetManagerAPITypes } from '@vivocha/public-entities';
+import { AssetManagerAPITypes } from '@vivocha/public-types';
 import { APIRequest, APIRequestHandler, APIResponse, Resource } from 'arrest';
 import { NextFunction, Router, RouterOptions } from 'express';
 import { unlinkSync } from 'fs';
