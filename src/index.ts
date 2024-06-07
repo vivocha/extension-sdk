@@ -1,4 +1,4 @@
-export * from '@vivocha/public-entities';
+export * from '@vivocha/public-types';
 export * from 'arrest';
 export * from 'debuggo';
 export * from './asset_manager';

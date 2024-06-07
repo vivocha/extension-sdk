@@ -1,4 +1,4 @@
-import { ChannelAPITypes, ExtensionAPITypes } from '@vivocha/public-entities';
+import { ChannelAPITypes, ExtensionAPITypes } from '@vivocha/public-types';
 import { APIRequest, APIResponse, Resource } from 'arrest';
 import { createHash } from 'crypto';
 import { NextFunction, Router, RouterOptions } from 'express';
