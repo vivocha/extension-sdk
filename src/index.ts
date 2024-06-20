@@ -2,6 +2,7 @@ export * from '@vivocha/public-types';
 export * from 'arrest';
 export * from 'debuggo';
 export * from './asset_manager';
+export * from './translation_manager';
 export * from './channel';
 export * from './extension';
 export * from './persistence';
